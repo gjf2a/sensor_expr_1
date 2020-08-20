@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sensor_expr_1/vectors.dart';
 import 'package:sensors/sensors.dart';
 
 void main() => runApp(MyApp());
@@ -21,42 +22,55 @@ class MyApp extends StatelessWidget {
 }
 
 class SensorState extends State<SensorInfo> {
-  double acclX, acclY, acclZ;
-  double userX, userY, userZ;
-  double gyroX, gyroY, gyroZ;
+  Averager acclAvg = Averager();
+  Averager userAvg = Averager();
+  Averager gyroAvg = Averager();
+  bool _accumulating = false;
 
   @override
   initState() {
     accelerometerEvents.listen((event) {
-      setState(() {
-        acclX = event.x;
-        acclY = event.y;
-        acclZ = event.z;
-      });
+      _update(acclAvg, event);
     });
 
     userAccelerometerEvents.listen((event) {
-      setState(() {
-        userX = event.x;
-        userY = event.y;
-        userZ = event.z;
-      });
+      _update(userAvg, event);
     });
 
     gyroscopeEvents.listen((event) {
-      setState(() {
-        gyroX = event.x;
-        gyroY = event.y;
-        gyroZ = event.z;
-      });
+      _update(gyroAvg, event);
+    });
+  }
+
+  void _update(Averager avg, event) {
+    setState(() {
+      Vector v = Vector(event.x, event.y, event.z);
+      if (_accumulating) {
+        avg.accumulate(v);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Text('''accl: ($acclX, $acclY, $acclZ)
-    user: ($userX, $userY, $userZ)
-    gyro: ($gyroX, $gyroY, $gyroZ)''', overflow: TextOverflow.visible);
+    return Column(children: <Widget>[
+      Text('''Current readings:
+    accl: (${acclAvg.last.uiString()})
+    user: (${userAvg.last.uiString()})
+    gyro: (${gyroAvg.last.uiString()})'''),
+      RaisedButton(child: Text("Record"), onPressed: () {
+        _accumulating = true;
+        acclAvg.reset();
+        userAvg.reset();
+        gyroAvg.reset();
+        },),
+      RaisedButton(child: Text("Stop"), onPressed: () {setState(() {
+        _accumulating = false;
+      });},),
+      Text('''Averages:
+    accl: (${acclAvg.average.uiString()})
+    user: (${userAvg.average.uiString()})
+    gyro: (${gyroAvg.average.uiString()})''', overflow: TextOverflow.visible)]);
   }
 }
 
