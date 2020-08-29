@@ -44,7 +44,7 @@ class SensorState extends State<SensorInfo> {
 
   void _update(Averager avg, event) {
     setState(() {
-      Vector v = Vector(event.x, event.y, event.z);
+      Value3D v = Value3D(event.x, event.y, event.z);
       if (_accumulating) {
         avg.accumulate(v);
       }
