@@ -1,5 +1,5 @@
+import 'package:accel_data/accel_data.dart';
 import 'package:flutter/material.dart';
-import 'package:sensor_expr_1/vectors.dart';
 import 'package:sensors/sensors.dart';
 
 void main() => runApp(MyApp());
@@ -28,7 +28,8 @@ class SensorState extends State<SensorInfo> {
   bool _accumulating = false;
 
   @override
-  initState() {
+  void initState() {
+    super.initState();
     accelerometerEvents.listen((event) {
       _update(acclAvg, event);
     });

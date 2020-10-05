@@ -25,6 +25,9 @@ dependencies:
     sdk: flutter
   sensors: '>=0.4.0 <2.0.0'
   intl: '>=0.16.1'
+  accel_data:
+    git:
+      url: https://github.com/gjf2a/accel_data
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
